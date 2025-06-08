@@ -15,7 +15,7 @@ class Postgres:
             port=db_config.POSTGRES_PORT,
         )
 
-    def insert_currency_course(self, data: pd.DataFrame):
+    def insert_currency_rate(self, data: pd.DataFrame):
         with self.__conn.cursor() as cur:
             rows = data.to_records(index=False).tolist()
             query = """

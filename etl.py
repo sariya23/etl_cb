@@ -52,4 +52,4 @@ if __name__ == "__main__":
     p = os.path.join(Constants.STATIC_DIR_CSV, f"{datetime.datetime.now()}_currency.csv")
     print(df.to_records(index=False))
     pos = Postgres(DbConfig())
-    pos.insert_currency_course(df)
+    pos.insert_currency_rate(df)
