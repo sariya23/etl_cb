@@ -7,16 +7,9 @@ import os
 from dotenv import load_dotenv
 
 from storage.postgres.postgres import Postgres
-from constants import Constants
+from constants.constants import Constants
+from constants.db_config import DbConfig
 
-load_dotenv(".env")
-
-
-POSTGRES_DB = os.getenv("POSTGRES_DB")
-POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 
 def get_xml_data(date: datetime.date) -> bytes:
     parsed_date = datetime.datetime.strftime(date, Constants.DATE_FORMAT)
@@ -59,11 +52,5 @@ if __name__ == "__main__":
     print(df)
     p = os.path.join(Constants.STATIC_DIR_CSV, f"{datetime.datetime.now()}_currency.csv")
     print(df.to_records(index=False))
-    pos = Postgres(
-        dbname=POSTGRES_DB,
-        user=POSTGRES_USERNAME,
-        password=POSTGRES_PASSWORD,
-        host=POSTGRES_HOST,
-        port=POSTGRES_PORT
-    )
+    pos = Postgres(DbConfig())
     pos.insert_currency_course(df)
