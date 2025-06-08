@@ -27,3 +27,9 @@ goose -dir migrations postgres "postgresql://POSTGRES_USERNAME:POSTGRES_PASSWORD
 ```shell
 python3 etl.py
 ```
+
+## Витрина
+
+- Вьюшка `last_currency_rate` - возвращает последние (по дате) курсы валют;
+- Вьюшка `avg_currenct_rate_all_time` - возрващает средние курсы валют за все время;
+- Вьюшка `currency_rate_change_yesterday` - возвращает разницу между сегодняшним (последним) и предыдущим курсом валют
