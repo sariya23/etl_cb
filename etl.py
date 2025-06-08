@@ -2,8 +2,12 @@ import datetime
 import requests
 from lxml import etree
 import pandas as pd
+import os
 
 
+static_dir = "static"
+static_dir_xml = "static/xml"
+static_dir_csv = "static/csv"
 date_format = "%d/%m/%Y"
 base_url = "http://www.cbr.ru/scripts/XML_daily.asp"
 root_tag = "ValCurs"
@@ -18,7 +22,7 @@ def get_xml_data(date: datetime.date) -> bytes:
 
 def write_data_in_xml(data: bytes) -> None:
     file_name = f"{datetime.datetime.now()}_currency.xml"
-    with open(file_name, "wb") as f:
+    with open(os.path.join(static_dir_xml, file_name), "wb") as f:
         f.write(data)
 
 def build_dataframe(xml_data: bytes) -> pd.DataFrame:
@@ -33,6 +37,9 @@ def build_dataframe(xml_data: bytes) -> pd.DataFrame:
                 currency[t].append(v.xpath(f"./{t}")[0].text)
 
     df = pd.DataFrame(currency)
+    df["NumCode"] = df["NumCode"].astype(str)
+    df["Value"] = pd.to_numeric(df["Value"].str.replace(",", "."), errors="coerce")
+    df["VunitRate"] = pd.to_numeric(df["VunitRate"].str.replace(",", "."), errors="coerce")
     return df
 
 
@@ -40,4 +47,6 @@ if __name__ == "__main__":
     xml_data = get_xml_data(datetime.date.today())
     write_data_in_xml(xml_data)
     df = build_dataframe(xml_data)
-    df.to_csv(f"{datetime.datetime.now()}_currency.csv", index=False)
+    print(df)
+    p = os.path.join(static_dir_csv, f"{datetime.datetime.now()}_currency.csv")
+    df.to_csv(p, index=False)
