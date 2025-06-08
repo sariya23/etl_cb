@@ -1,19 +1,17 @@
 import datetime
-from urllib.request import urlopen, urlretrieve
 import requests
 from lxml import etree
 
-date_format = "%d/%m/%y"
+date_format = "%d/%m/%Y"
+base_url = "http://www.cbr.ru/scripts/XML_daily.asp"
 
-def get_currency_date_xml(date: datetime.date):
+def get_xml_currency(date: datetime.date):
     parsed_date = datetime.datetime.strftime(date, date_format)
+    response = requests.get(f"{base_url}?date_req={parsed_date}")
+    print(response.url)
+    return response
 
-
-curr_date = "07/06/2025"
-URL = f"http://www.cbr.ru/scripts/XML_daily.asp?date_req={curr_date}"
-
-response = urlopen(URL)
-xml_data = response.read()
+xml_data = get_xml_currency(datetime.date.today()).content
 with open("response.xml", "wb") as f:
     f.write(xml_data)
 tree = etree.fromstring(xml_data)
