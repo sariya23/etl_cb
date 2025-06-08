@@ -50,3 +50,4 @@ if __name__ == "__main__":
     print(df)
     p = os.path.join(static_dir_csv, f"{datetime.datetime.now()}_currency.csv")
     df.to_csv(p, index=False)
+    print(df.to_sql())
