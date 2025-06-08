@@ -40,14 +40,14 @@ def build_dataframe(xml_data: bytes, date: datetime.date) -> pd.DataFrame:
     df["VunitRate"] = pd.to_numeric(
         df["VunitRate"].str.replace(",", "."), errors="coerce"
     )
-    df["CourseDate"] = date
+    df["RateDate"] = date
     return df
 
 
 if __name__ == "__main__":
-    xml_data = get_xml_data(datetime.date.today())
+    xml_data = get_xml_data(datetime.date(year=2025, month=6, day=2))
     write_data_in_xml(xml_data)
-    df = build_dataframe(xml_data, datetime.date.today())
+    df = build_dataframe(xml_data, datetime.date(year=2025, month=6, day=2))
     print(df)
     p = os.path.join(Constants.STATIC_DIR_CSV, f"{datetime.datetime.now()}_currency.csv")
     print(df.to_records(index=False))

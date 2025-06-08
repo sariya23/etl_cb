@@ -1,5 +1,3 @@
-import datetime
-
 import pandas as pd
 import psycopg2
 from psycopg2.extras import execute_values
@@ -21,7 +19,7 @@ class Postgres:
         with self.__conn.cursor() as cur:
             rows = data.to_records(index=False).tolist()
             query = """
-                    INSERT INTO currency_course (num_code, char_code, nominal, name, value, vunit_value, course_date)
+                    INSERT INTO currency_rate (num_code, char_code, nominal, name, value, vunit_value, rate_date)
                     VALUES %s
                     """
             execute_values(cur, query, rows)
