@@ -4,7 +4,6 @@ import requests
 from lxml import etree
 import pandas as pd
 import os
-from dotenv import load_dotenv
 
 from storage.postgres.postgres import Postgres
 from constants.constants import Constants
