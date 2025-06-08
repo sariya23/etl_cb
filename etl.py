@@ -7,18 +7,10 @@ import os
 from dotenv import load_dotenv
 
 from storage.postgres.postgres import Postgres
+from constants import Constants
 
 load_dotenv(".env")
 
-
-static_dir = "static"
-static_dir_xml = "static/xml"
-static_dir_csv = "static/csv"
-date_format = "%d/%m/%Y"
-base_url = "http://www.cbr.ru/scripts/XML_daily.asp"
-root_tag = "ValCurs"
-item_tag = "Valute"
-data_tags = ("NumCode", "CharCode", "Nominal", "Name", "Value", "VunitRate")
 
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 POSTGRES_USERNAME = os.getenv("POSTGRES_USERNAME")
@@ -27,14 +19,14 @@ POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 
 def get_xml_data(date: datetime.date) -> bytes:
-    parsed_date = datetime.datetime.strftime(date, date_format)
-    response = requests.get(f"{base_url}?date_req={parsed_date}")
+    parsed_date = datetime.datetime.strftime(date, Constants.DATE_FORMAT)
+    response = requests.get(f"{Constants.BASE_URL}?date_req={parsed_date}")
     return response.content
 
 
 def write_data_in_xml(data: bytes) -> None:
     file_name = f"{datetime.datetime.now()}_currency.xml"
-    with open(os.path.join(static_dir_xml, file_name), "wb") as f:
+    with open(os.path.join(Constants.STATIC_DIR_XML, file_name), "wb") as f:
         f.write(data)
 
 
@@ -42,8 +34,8 @@ def build_dataframe(xml_data: bytes, date: datetime.date) -> pd.DataFrame:
     currency = {}
 
     tree = etree.fromstring(xml_data)
-    for v in tree.xpath(f"/{root_tag}/{item_tag}"):
-        for t in data_tags:
+    for v in tree.xpath(f"/{Constants.ROOT_TAG}/{Constants.ITEM_TAG}"):
+        for t in Constants.DATA_TAGS:
             if t not in currency:
                 currency[t] = [v.xpath(f"./{t}")[0].text]
             else:
@@ -65,7 +57,7 @@ if __name__ == "__main__":
     write_data_in_xml(xml_data)
     df = build_dataframe(xml_data, datetime.date.today())
     print(df)
-    p = os.path.join(static_dir_csv, f"{datetime.datetime.now()}_currency.csv")
+    p = os.path.join(Constants.STATIC_DIR_CSV, f"{datetime.datetime.now()}_currency.csv")
     print(df.to_records(index=False))
     pos = Postgres(
         dbname=POSTGRES_DB,
